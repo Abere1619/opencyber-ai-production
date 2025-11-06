@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenCyber AI - Production</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        .endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .endpoint {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #ff6f00;
+        }
+        button {
+            background: #ff6f00;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #ff8f00;
+        }
+        input {
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+        .success { color: #68d391; }
+        .error { color: #fc8181; }
+        .warning { color: #f6e05e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 OpenCyber AI Platform</h1>
+        <p>Production Deployment - Status Dashboard</p>
+        
+        <div class="status">
+            <h2>System Status</h2>
+            <div id="systemStatus">Checking...</div>
+        </div>
+        
+        <div class="endpoints">
+            <div class="endpoint">
+                <h3>File Analysis</h3>
+                <input type="file" id="fileInput">
+                <button onclick="analyzeFile()">Analyze File</button>
+                <div id="fileResult"></div>
+            </div>
+            
+            <div class="endpoint">
+                <h3>URL Analysis</h3>
+                <input type="text" id="urlInput" placeholder="Enter URL" value="https://example.com">
+                <button onclick="analyzeURL()">Analyze URL</button>
+                <div id="urlResult"></div>
+            </div>
+            
+            <div class="endpoint">
+                <h3>IP Analysis</h3>
+                <input type="text" id="ipInput" placeholder="Enter IP" value="196.188.171.48">
+                <button onclick="analyzeIP()">Analyze IP</button>
+                <div id="ipResult"></div>
+            </div>
+        </div>
+
+        <div class="endpoints">
+            <div class="endpoint">
+                <h3>Quick Links</h3>
+                <p><a href="http://localhost:8000/api/docs" target="_blank" style="color: #ff6f00;">API Documentation</a></p>
+                <p><a href="http://localhost:3000" target="_blank" style="color: #ff6f00;">Monitoring Dashboard</a></p>
+                <p><a href="http://localhost:8000/metrics" target="_blank" style="color: #ff6f00;">Metrics</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+        
+        async function checkHealth() {
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                document.getElementById('systemStatus').innerHTML = `
+                    <p><strong>Status:</strong> <span class="success">${data.status}</span></p>
+                    <p><strong>Uptime:</strong> ${Math.round(data.uptime_seconds)} seconds</p>
+                    <p><strong>Environment:</strong> ${data.environment}</p>
+                    <p><strong>Version:</strong> ${data.version}</p>
+                `;
+            } catch (error) {
+                document.getElementById('systemStatus').innerHTML = `
+                    <p><strong>Status:</strong> <span class="error">Offline</span></p>
+                    <p class="error">Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        async function analyzeFile() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('fileResult');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<p class="warning">Please select a file</p>';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            try {
+                resultDiv.innerHTML = '<p>Analyzing...</p>';
+                const response = await fetch(API_BASE + '/analysis/file', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                resultDiv.innerHTML = `
+                    <p><strong>Verdict:</strong> <span class="${result.verdict === 'clean' ? 'success' : 'error'}">${result.verdict}</span></p>
+                    <p><strong>Risk Level:</strong> ${result.risk_level}</p>
+                    <p><strong>Confidence:</strong> ${(result.confidence_score * 100).toFixed(1)}%</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function analyzeURL() {
+            const urlInput = document.getElementById('urlInput');
+            const resultDiv = document.getElementById('urlResult');
+            
+            try {
+                resultDiv.innerHTML = '<p>Analyzing...</p>';
+                const response = await fetch(API_BASE + '/analysis/url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: urlInput.value })
+                });
+                const result = await response.json();
+                resultDiv.innerHTML = `
+                    <p><strong>Verdict:</strong> <span class="${result.verdict === 'clean' ? 'success' : result.verdict === 'suspicious' ? 'warning' : 'error'}">${result.verdict}</span></p>
+                    <p><strong>Risk Level:</strong> ${result.risk_level}</p>
+                    <p><strong>Confidence:</strong> ${(result.confidence_score * 100).toFixed(1)}%</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function analyzeIP() {
+            const ipInput = document.getElementById('ipInput');
+            const resultDiv = document.getElementById('ipResult');
+            
+            try {
+                resultDiv.innerHTML = '<p>Analyzing...</p>';
+                const response = await fetch(API_BASE + '/analysis/ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: ipInput.value })
+                });
+                const result = await response.json();
+                resultDiv.innerHTML = `
+                    <p><strong>Verdict:</strong> <span class="${result.verdict === 'clean' ? 'success' : result.verdict === 'suspicious' ? 'warning' : 'error'}">${result.verdict}</span></p>
+                    <p><strong>Risk Level:</strong> ${result.risk_level}</p>
+                    <p><strong>Confidence:</strong> ${(result.confidence_score * 100).toFixed(1)}%</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Check health on load and every 30 seconds
+        checkHealth();
+        setInterval(checkHealth, 30000);
+    </script>
+</body>
+</html>
