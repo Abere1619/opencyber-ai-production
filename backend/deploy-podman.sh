@@ -52,7 +52,7 @@ sleep 15
 echo "Starting Backend..."
 podman run -d --name opencyber-backend \
     --network opencyber-network \
-    -p 8000:8000 \
+    -p 8001:8000 \
     -e DATABASE_URL=postgresql://opencyber:$DB_PASSWORD@opencyber-db:5432/opencyber_ai \
     -e REDIS_URL=redis://opencyber-redis:6379 \
     -e SECRET_KEY=$SECRET_KEY \
@@ -91,7 +91,7 @@ echo "🧪 Testing services..."
 
 # Test backend directly
 echo "Backend health check:"
-if curl -s http://localhost:8000/health > /dev/null; then
+if curl -s http://localhost:8001/health > /dev/null; then
     echo "✅ Backend is healthy"
 else
     echo "❌ Backend health check failed"
@@ -111,9 +111,9 @@ echo ""
 echo "🎉 OpenCyber AI Platform Deployment Complete!"
 echo ""
 echo "📊 Access URLs:"
-echo "   Backend API:    http://localhost:8000"
+echo "   Backend API:    http://localhost:8001"
 echo "   Frontend:       http://localhost:8080"
-echo "   API Documentation: http://localhost:8000/api/docs"
+echo "   API Documentation: http://localhost:8001/api/docs"
 echo "   Monitoring:     http://localhost:3000"
 echo "   Grafana Login:  admin / $GRAFANA_PASSWORD"
 echo ""
