@@ -1,0 +1,162 @@
+<!-- Enhanced Threat Detection Tabs -->
+<div class="detection-tabs">
+    <div class="detection-tab active" data-tab="url">
+        <i class="fas fa-link"></i> URL Analysis
+    </div>
+    <div class="detection-tab" data-tab="ip">
+        <i class="fas fa-network-wired"></i> IP Address
+    </div>
+    <div class="detection-tab" data-tab="file">
+        <i class="fas fa-file"></i> File Analysis
+    </div>
+    <div class="detection-tab" data-tab="network">
+        <i class="fas fa-search"></i> Network Scan
+    </div>
+    <div class="detection-tab" data-tab="threat-intel">
+        <i class="fas fa-database"></i> Threat Intel
+    </div>
+</div>
+
+<!-- URL Analysis Tab -->
+<div class="tab-content active" id="url-tab">
+    <div class="scanner-input">
+        <input type="text" id="urlInput" placeholder="https://example.com" value="https://secure-login.cbe.et">
+        <button onclick="analyzeThreat('url')">
+            <i class="fas fa-search"></i> Analyze URL
+        </button>
+    </div>
+    
+    <div class="platform-info">
+        <i class="fas fa-info-circle"></i>
+        <span>Safe testing with threat indicators using open-source detection engines</span>
+    </div>
+    
+    <div class="scan-results" id="urlResults">
+        <div class="result-item result-clean">
+            <div class="result-icon"><i class="fas fa-info-circle"></i></div>
+            <div>
+                <h4>Enhanced URL Analysis Ready</h4>
+                <p>Enter a URL to analyze for phishing, malware, and security threats with Ethiopian organizational context</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IP Analysis Tab -->
+<div class="tab-content" id="ip-tab">
+    <div class="scanner-input">
+        <input type="text" id="ipInput" placeholder="Enter IP address" value="196.188.171.48">
+        <button onclick="analyzeThreat('ip')">
+            <i class="fas fa-search"></i> Analyze IP
+        </button>
+    </div>
+    
+    <div class="platform-info">
+        <i class="fas fa-info-circle"></i>
+        <span>IP threat intelligence with Ethiopian network context and international reputation checks</span>
+    </div>
+    
+    <div class="scan-results" id="ipResults">
+        <div class="result-item result-clean">
+            <div class="result-icon"><i class="fas fa-info-circle"></i></div>
+            <div>
+                <h4>Enhanced IP Analysis Ready</h4>
+                <p>Enter an IP address to analyze for threats and reputation with Ethiopian network intelligence</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Analysis Tab -->
+<div class="tab-content" id="file-tab">
+    <div class="file-upload-area" id="fileDropArea">
+        <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h3>Upload File for Enhanced Analysis</h3>
+        <p>Drag & drop files here or click to browse</p>
+        <p class="file-info-text">
+            Supports: EXE, DLL, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JS, ZIP, RAR (Max 100MB)
+        </p>
+        <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(this.files)">
+    </div>
+    
+    <div class="platform-info">
+        <i class="fas fa-info-circle"></i>
+        <span>Multi-engine file analysis with TensorFlow, PyTorch, and static analysis</span>
+    </div>
+    
+    <div class="file-info" id="fileInfo">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong id="fileName">file.exe</strong>
+                <div style="font-size: 0.8rem; color: #a0aec0;" id="fileDetails">Size: 2.4 MB | Type: Application</div>
+            </div>
+            <button class="btn" style="background: linear-gradient(135deg, var(--link-color), #c05621);" onclick="analyzeThreat('file')">
+                <i class="fas fa-shield-alt"></i> Analyze File
+            </button>
+        </div>
+    </div>
+    
+    <div class="scan-results" id="fileResults">
+        <div class="result-item result-clean">
+            <div class="result-icon"><i class="fas fa-info-circle"></i></div>
+            <div>
+                <h4>Enhanced File Analysis Ready</h4>
+                <p>Upload a file to analyze for malware and security threats using multiple AI engines</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Threat Intelligence Tab -->
+<div class="tab-content" id="threat-intel-tab">
+    <div class="threat-intel-dashboard">
+        <h3>Threat Intelligence Dashboard</h3>
+        
+        <div class="intel-feeds">
+            <h4>Available Threat Feeds</h4>
+            <div class="feed-grid">
+                <div class="feed-card">
+                    <h5>Ethiopian Organizations</h5>
+                    <ul>
+                        <li>Financial Institutions</li>
+                        <li>Government Entities</li>
+                        <li>Telecom Providers</li>
+                        <li>Critical Infrastructure</li>
+                    </ul>
+                </div>
+                <div class="feed-card">
+                    <h5>International Feeds</h5>
+                    <ul>
+                        <li>OpenPhish</li>
+                        <li>URLhaus</li>
+                        <li>Phishing Database</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="threat-stats">
+            <h4>Threat Statistics</h4>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalScans">0</div>
+                    <div class="stat-label">Total Analyses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="threatsDetected">0</div>
+                    <div class="stat-label">Threats Detected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ethiopianOrgs">12</div>
+                    <div class="stat-label">Ethiopian Orgs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="confidenceRate">95%</div>
+                    <div class="stat-label">Confidence Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

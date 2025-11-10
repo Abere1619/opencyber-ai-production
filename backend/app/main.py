@@ -1,3 +1,4 @@
+from app.network_scanner import NetworkScanner
 from fastapi import FastAPI, Depends, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -158,6 +159,104 @@ async def get_dashboard_stats():
         "active_models": ["tensorflow", "pytorch", "opencti", "misp"]
     }
 
+@app.post("/api/v1/network/scan")
+async def network_scan(ip_request: dict):
+    """
+    Network scanning endpoint for IP reconnaissance
+    """
+    try:
+        scanner = NetworkScanner()
+        ip_address = ip_request.get("ip", "").strip()
+        
+        if not ip_address:
+            return {"error": "IP address required"}
+        
+        scan_results = scanner.scan_ip(ip_address)
+        
+        if "error" in scan_results:
+            return scan_results
+            
+        threat_assessment = assess_network_threat(scan_results)
+        scan_results["threat_assessment"] = threat_assessment
+        
+        return scan_results
+        
+    except Exception as e:
+        return {"error": f"Scan failed: {str(e)}"}
+
+def assess_network_threat(scan_results: dict) -> dict:
+    threat_score = 0
+    warnings = []
+    
+    if scan_results.get("reachable"):
+        threat_score += 10
+    
+    open_ports = scan_results.get("open_ports", [])
+    suspicious_ports = [23, 135, 139, 445, 1433, 3389]
+    
+    for port_info in open_ports:
+        port = port_info["port"]
+        if port in suspicious_ports:
+            threat_score += 20
+            warnings.append(f"Suspicious port open: {port} ({port_info['service']})")
+        else:
+            threat_score += 5
+    
+    if threat_score >= 30:
+        level = "High"
+    elif threat_score >= 15:
+        level = "Medium"
+    else:
+        level = "Low"
+    
+    return {
+        "threat_score": threat_score,
+        "level": level,
+        "warnings": warnings,
+        "open_port_count": len(open_ports)
+    }
+
+
+@app.get("/api/v1/threat-intel/feeds")
+async def get_threat_intel_feeds():
+    """
+    Get available threat intelligence feeds
+    """
+    return {
+        "ethiopian_organizations": {
+            "financial": [
+                "cbe.et", "dbee.et", "awashbank.com", "dashenbanksc.com", 
+                "nibbank.com", "unitybank.com", "abyssiniabank.com"
+            ],
+            "government": [
+                "gov.et", "mfa.gov.et", "mofed.gov.et", "moh.gov.et",
+                "ethio telecom", "ethiopian airlines", "eea.gov.et"
+            ],
+            "telecom": [
+                "ethiotelecom.et", "telecom.et", "ethiotelecom.com.et"
+            ],
+            "critical_infrastructure": [
+                "eep.com.et", "eeu.gov.et", "ethiopianairlines.com"
+            ]
+        },
+        "international_feeds": [
+            "OpenPhish",
+            "URLhaus", 
+            "Phishing Database",
+            "AbuseIPDB",
+            "VirusTotal"
+        ],
+        "ai_engines": [
+            "TensorFlow",
+            "PyTorch", 
+            "OpenCTI",
+            "Static Analysis"
+        ],
+        "last_updated": "2024-01-10",
+        "status": "operational"
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
@@ -166,3 +265,246 @@ if __name__ == "__main__":
         port=8000,
         log_level=settings.LOG_LEVEL.lower()
     )
+
+# Add this import at the top with other imports
+from app.network_scanner import NetworkScanner
+
+# Add this route with your existing API endpoints
+@app.post("/api/v1/network/scan")
+async def network_scan(ip_request: dict):
+    """
+    Network scanning endpoint for IP reconnaissance
+    """
+    try:
+        scanner = NetworkScanner()
+        ip_address = ip_request.get("ip", "").strip()
+        
+        if not ip_address:
+            return {"error": "IP address required"}
+        
+        # Perform network scan
+        scan_results = scanner.scan_ip(ip_address)
+        
+        # Enhanced threat assessment based on scan results
+        threat_assessment = assess_network_threat(scan_results)
+        scan_results["threat_assessment"] = threat_assessment
+        
+        return scan_results
+        
+    except Exception as e:
+        return {"error": f"Scan failed: {str(e)}"}
+
+def assess_network_threat(scan_results: dict) -> dict:
+    """
+    Assess threat level based on network scan results
+    """
+    threat_score = 0
+    warnings = []
+    
+    if scan_results.get("reachable"):
+        threat_score += 10
+    
+    open_ports = scan_results.get("open_ports", [])
+    suspicious_ports = [23, 135, 139, 445, 1433, 3389]  # Common attack vectors
+    
+    for port_info in open_ports:
+        port = port_info["port"]
+        if port in suspicious_ports:
+            threat_score += 20
+            warnings.append(f"Suspicious port open: {port} ({port_info['service']})")
+        else:
+            threat_score += 5
+    
+    # Determine threat level
+    if threat_score >= 30:
+        level = "High"
+    elif threat_score >= 15:
+        level = "Medium"
+    else:
+        level = "Low"
+    
+    return {
+        "threat_score": threat_score,
+        "level": level,
+        "warnings": warnings,
+        "open_port_count": len(open_ports)
+    }
+
+# Add this import at the top with other imports
+from app.network_scanner import NetworkScanner
+
+# Add this route with your existing API endpoints
+@app.post("/api/v1/network/scan")
+async def network_scan(ip_request: dict):
+    """
+    Network scanning endpoint for IP reconnaissance
+    """
+    try:
+        scanner = NetworkScanner()
+        ip_address = ip_request.get("ip", "").strip()
+        
+        if not ip_address:
+            return {"error": "IP address required"}
+        
+        # Perform network scan
+        scan_results = scanner.scan_ip(ip_address)
+        
+        # Enhanced threat assessment based on scan results
+        threat_assessment = assess_network_threat(scan_results)
+        scan_results["threat_assessment"] = threat_assessment
+        
+        return scan_results
+        
+    except Exception as e:
+        return {"error": f"Scan failed: {str(e)}"}
+
+def assess_network_threat(scan_results: dict) -> dict:
+    """
+    Assess threat level based on network scan results
+    """
+    threat_score = 0
+    warnings = []
+    
+    if scan_results.get("reachable"):
+        threat_score += 10
+    
+    open_ports = scan_results.get("open_ports", [])
+    suspicious_ports = [23, 135, 139, 445, 1433, 3389]  # Common attack vectors
+    
+    for port_info in open_ports:
+        port = port_info["port"]
+        if port in suspicious_ports:
+            threat_score += 20
+            warnings.append(f"Suspicious port open: {port} ({port_info['service']})")
+        else:
+            threat_score += 5
+    
+    # Determine threat level
+    if threat_score >= 30:
+        level = "High"
+    elif threat_score >= 15:
+        level = "Medium"
+    else:
+        level = "Low"
+    
+    return {
+        "threat_score": threat_score,
+        "level": level,
+        "warnings": warnings,
+        "open_port_count": len(open_ports)
+    }
+
+# Add threat intelligence import
+from app.threat_intelligence import ThreatIntelligence
+
+@app.post("/api/v1/analysis/url")
+async def analyze_url(url_request: dict):
+    """
+    Enhanced URL analysis with Ethiopian organizational context
+    """
+    try:
+        threat_intel = ThreatIntelligence()
+        url = url_request.get("url", "").strip()
+        
+        if not url:
+            return {"error": "URL is required"}
+        
+        # Perform comprehensive analysis
+        analysis = threat_intel.analyze_url(url)
+        
+        return analysis
+        
+    except Exception as e:
+        return {"error": f"URL analysis failed: {str(e)}"}
+
+@app.post("/api/v1/analysis/ip")
+async def analyze_ip(ip_request: dict):
+    """
+    Enhanced IP analysis with Ethiopian context
+    """
+    try:
+        threat_intel = ThreatIntelligence()
+        ip_address = ip_request.get("ip", "").strip()
+        
+        if not ip_address:
+            return {"error": "IP address is required"}
+        
+        # Perform comprehensive analysis
+        analysis = threat_intel.analyze_ip(ip_address)
+        
+        return analysis
+        
+    except Exception as e:
+        return {"error": f"IP analysis failed: {str(e)}"}
+
+@app.post("/api/v1/analysis/file")
+async def analyze_file(file_request: dict = None, file: UploadFile = None):
+    """
+    Enhanced file analysis with multi-engine detection
+    """
+    try:
+        threat_intel = ThreatIntelligence()
+        
+        if file:
+            # Handle file upload
+            file_data = await file.read()
+            filename = file.filename
+            
+            analysis = threat_intel.analyze_file(file_data, filename)
+            return analysis
+        else:
+            return {"error": "File is required"}
+        
+    except Exception as e:
+        return {"error": f"File analysis failed: {str(e)}"}
+
+@app.get("/api/v1/threat-intel/feeds")
+async def get_threat_feeds():
+    """
+    Get available threat intelligence feeds
+    """
+    threat_intel = ThreatIntelligence()
+    return {
+        "ethiopian_organizations": threat_intel.ethiopian_orgs,
+        "international_feeds": list(threat_intel.threat_feeds.keys()),
+        "last_updated": "2024-01-10"
+    }
+
+@app.get("/api/v1/threat-intel/feeds")
+async def get_threat_intel_feeds():
+    """
+    Get available threat intelligence feeds
+    """
+    return {
+        "ethiopian_organizations": {
+            "financial": [
+                "cbe.et", "dbee.et", "awashbank.com", "dashenbanksc.com", 
+                "nibbank.com", "unitybank.com", "abyssiniabank.com"
+            ],
+            "government": [
+                "gov.et", "mfa.gov.et", "mofed.gov.et", "moh.gov.et",
+                "ethio telecom", "ethiopian airlines", "eea.gov.et"
+            ],
+            "telecom": [
+                "ethiotelecom.et", "telecom.et", "ethiotelecom.com.et"
+            ],
+            "critical_infrastructure": [
+                "eep.com.et", "eeu.gov.et", "ethiopianairlines.com"
+            ]
+        },
+        "international_feeds": [
+            "OpenPhish",
+            "URLhaus", 
+            "Phishing Database",
+            "AbuseIPDB",
+            "VirusTotal"
+        ],
+        "ai_engines": [
+            "TensorFlow",
+            "PyTorch", 
+            "OpenCTI",
+            "Static Analysis"
+        ],
+        "last_updated": "2024-01-10",
+        "status": "operational"
+    }
